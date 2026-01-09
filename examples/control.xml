@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<febio_coupled_solver version="1.0">
+    <models>
+        <primary_model name="chem"/>
+        <model name="mech" file="mech.feb" />
+    </models>
+    <exchanges>
+        <exchange src="mech.elem_data('effective stress')" dst="chem.mesh_data('k_map')">
+            <filter type="scale">
+                <scale>0.1</scale>
+            </filter>
+        </exchange>
+        <exchange src="chem.elem_data('c2')" dst="mech.mesh_data('E_map')">
+            <filter type="scale">
+                <scale>1e4</scale>
+            </filter>
+        </exchange>
+    </exchanges>
+</febio_coupled_solver>
