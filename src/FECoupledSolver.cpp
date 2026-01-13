@@ -2,7 +2,7 @@
 
 #include <FECore/FEModel.h>
 #include "FECoupledSolver.h"
-#include <XML/XMLReader.h>
+#include <FEBioXML/XMLReader.h>
 #include <FEBioXML/xmltool.h>
 #include <FEBioXML/FEBioImport.h>
 #include <FECore/log.h>
