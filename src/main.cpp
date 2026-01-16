@@ -20,5 +20,7 @@ FECORE_PLUGIN void GetPluginVersion(int& major, int& minor, int& patch)
 FECORE_EXPORT void PluginInitialize(FECoreKernel& febio)
 {
 	FECoreKernel::SetInstance(&febio);
+	febio.SetActiveModule(0);
+
 	REGISTER_FECORE_CLASS(FECoupledSolver, "fuse");
 }

@@ -10,6 +10,8 @@
 *.userosscache
 *.sln.docstates
 *.env
+*.xplt
+
 
 vs22/
 
