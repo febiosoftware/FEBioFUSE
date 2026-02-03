@@ -36,13 +36,13 @@ bool FECoupledSolver::Init(const char* szfile)
 {
 	if (!ParseControlFile(szfile))
 	{
-		std::cerr << "Failed to parse control file: " << szfile << std::endl;
+		feLog("Failed to parse control file: %s\n", szfile);
 		return false;
 	}
 
 	if (!InitModels())
 	{
-		std::cerr << "Failed to initialize models.\n";
+		feLog("Failed to initialize models.\n");
 		return false;
 	}
 
