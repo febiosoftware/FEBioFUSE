@@ -36,15 +36,15 @@ FEDataMap* GetDataMap(FEModel* fem, const std::string& name)
 
 bool DataExchange::InitExchange(ModelList& models)
 {
-	ParamString src(src.c_str());
-	srcModel = models.GetModel(src.string()); assert(srcModel);
+	ParamString pssrc(src.c_str());
+	srcModel = models.GetModel(pssrc.string()); assert(srcModel);
 	if (srcModel == nullptr) return false;
 
 	string moduleName = srcModel->GetModuleName();
 	FECoreKernel& fecore = FECoreKernel::GetInstance();
 	fecore.SetActiveModule(moduleName.c_str());
 
-	srcData = srcModel->GetDataValue(src);
+	srcData = srcModel->GetDataValue(pssrc);
 	if (!srcData.IsValid()) return false;
 
 	ParamString psdst(dst.c_str());
