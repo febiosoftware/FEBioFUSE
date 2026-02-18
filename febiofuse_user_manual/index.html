@@ -454,13 +454,17 @@
 <h3 id="fuse-input-file">FUSE input file<a class="headerlink" href="#fuse-input-file" title="Permanent link">&para;</a></h3>
 <p>The FUSE input file is an xml formatted file that defines the models involved in the coupled simulation and how data is exchanged between the models.</p>
 <p>The root element is called <code>febio_coupled_solver</code>.</p>
-<p>There are two main sections in the file:
-* <code>models</code>: This defines the models that are involved in the coupled simulation. 
-* <code>exchanges</code>: This defines the data that needs to be exchanged between models.</p>
+<p>There are two main sections in the file:</p>
+<ul>
+<li><code>models</code>: This defines the models that are involved in the coupled simulation. </li>
+<li><code>exchanges</code>: This defines the data that needs to be exchanged between models.</li>
+</ul>
 <h4 id="the-models-section">The models section<a class="headerlink" href="#the-models-section" title="Permanent link">&para;</a></h4>
-<p>The <code>models</code> section lists the secondary models that are involved in the simulation. Each model is defined via the <code>model</code> tag. This tag takes two attributes:
-* <code>name</code>: specify a name for this model to refer to later. 
-* <code>file</code>: specify the relative input file name for this model. </p>
+<p>The <code>models</code> section lists the secondary models that are involved in the simulation. Each model is defined via the <code>model</code> tag. This tag takes two attributes:</p>
+<ul>
+<li><code>name</code>: specify a name for this model to refer to later. </li>
+<li><code>file</code>: specify the relative input file name for this model. </li>
+</ul>
 <p>Note that the primary model should not be defined in this list. By default, the name of the primary model is <code>fem</code>.  To change this, you can use the <code>primary_model</code> tag. The name is set with the <code>name</code> attribute.</p>
 <div class="highlight"><pre><span></span><code><span class="w">    </span><span class="nt">&lt;models&gt;</span>
 <span class="w">        </span><span class="nt">&lt;primary_model</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;chem&quot;</span><span class="nt">/&gt;</span>
@@ -469,9 +473,11 @@
 </code></pre></div>
 <h4 id="the-exchanges-section">The exchanges section<a class="headerlink" href="#the-exchanges-section" title="Permanent link">&para;</a></h4>
 <p>This section defines how data is exchanged between different models. Each exchange is defined via an <code>exchange</code> element. Each exchange identifies a source and destination model. For a model to serve as a destination model, it must define a mesh data map to receive the data in.</p>
-<p>The <code>exchange</code> element defines two attributes.
-* <code>src</code>: the source data, evaluated on the source model. 
-* <code>dst</code>: the destination data, evaluated on the destination model’s mesh data map.</p>
+<p>The <code>exchange</code> element defines two attributes.</p>
+<ul>
+<li><code>src</code>: the source data, evaluated on the source model. </li>
+<li><code>dst</code>: the destination data, evaluated on the destination model’s mesh data map.</li>
+</ul>
 <p>In addition, this element has the following property. </p>
 <ul>
 <li><code>filter</code>: a 1D function that will be applied to the source data before mapping it to the destination.</li>
