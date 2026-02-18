@@ -13,12 +13,14 @@ The FUSE input file is an xml formatted file that defines the models involved in
 The root element is called `febio_coupled_solver`.
 
 There are two main sections in the file:
+
 * `models`: This defines the models that are involved in the coupled simulation. 
 * `exchanges`: This defines the data that needs to be exchanged between models.
 
 #### The models section
 
 The `models` section lists the secondary models that are involved in the simulation. Each model is defined via the `model` tag. This tag takes two attributes:
+
 * `name`: specify a name for this model to refer to later. 
 * `file`: specify the relative input file name for this model. 
 
@@ -35,6 +37,7 @@ Note that the primary model should not be defined in this list. By default, the 
 This section defines how data is exchanged between different models. Each exchange is defined via an `exchange` element. Each exchange identifies a source and destination model. For a model to serve as a destination model, it must define a mesh data map to receive the data in.
 
 The `exchange` element defines two attributes.
+
 * `src`: the source data, evaluated on the source model. 
 * `dst`: the destination data, evaluated on the destination model’s mesh data map.
 
