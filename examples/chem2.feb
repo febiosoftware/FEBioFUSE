@@ -9,25 +9,31 @@
 	<Globals>
 		<Solutes>
 			<solute id="1" name="A"/>
-			<solute id="2" name="B"/>
 		</Solutes>
+		<SolidBoundMolecules>
+			<solid_bound id="1" name="B"/>
+		</SolidBoundMolecules>
 	</Globals>
 	<Material>
 		<material id="1" name="Material1" type="reaction-diffusion">
 			<species name="A">
 				<diffusivity>1</diffusivity>
 			</species>
-			<species name="B">
-				<diffusivity>1</diffusivity>
-			</species>
+			<solid_bound_species name="B">
+				<rho0>0</rho0>
+				<density>1</density>
+				<molar_mass>1</molar_mass>
+			</solid_bound_species>
 		</material>
 		<material id="2" name="Material2" type="reaction-diffusion">
 			<species name="A">
 				<diffusivity>1</diffusivity>
 			</species>
-			<species name="B">
-				<diffusivity>1</diffusivity>
-			</species>
+			<solid_bound_species name="B">
+				<rho0>0</rho0>
+				<density>1</density>
+				<molar_mass>1</molar_mass>
+			</solid_bound_species>
 			<reaction type="mass action">
 				<equation>A --> B</equation>
 				<rate_constant type="map">k_map</rate_constant>
@@ -726,7 +732,7 @@
 	</MeshDomains>
 	<MeshData>
 		<ElementData name="k_map" type="const" elem_set="Part2">
-			<value>0.0</value>
+			<value>0.1</value>
 		</ElementData>
 	</MeshData>
 	<Initial>
@@ -737,9 +743,12 @@
 	</Initial>
 	<Output>
 		<plotfile type="febio">
-			<var type="concentration['c1']=c1"/>
-			<var type="concentration['c2']=c2"/>
-			<!-- <var type="parameter['chem.material[1].reaction[0].rate_constant']=k"/> -->
+			<var type="concentration['A']=A"/>
+			<var type="sbs concentration['B']=B"/>
+			<var type="parameter['chem.material[1].reaction[0].rate_constant']=k"/>
 		</plotfile>
+		<!-- <logfile>
+			<element_data data="sbsc1" file="log.txt"/>
+		</logfile> -->
 	</Output>
 </febio_spec>
