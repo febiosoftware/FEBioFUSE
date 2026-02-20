@@ -387,6 +387,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#the-strategy-section" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The strategy section
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -454,10 +465,11 @@
 <h3 id="fuse-input-file">FUSE input file<a class="headerlink" href="#fuse-input-file" title="Permanent link">&para;</a></h3>
 <p>The FUSE input file is an xml formatted file that defines the models involved in the coupled simulation and how data is exchanged between the models.</p>
 <p>The root element is called <code>febio_coupled_solver</code>.</p>
-<p>There are two main sections in the file:</p>
+<p>There are three main sections in the file:</p>
 <ul>
 <li><code>models</code>: This defines the models that are involved in the coupled simulation. </li>
 <li><code>exchanges</code>: This defines the data that needs to be exchanged between models.</li>
+<li><code>strategy</code>: This defines the solution strategy of the coupled solver.</li>
 </ul>
 <h4 id="the-models-section">The models section<a class="headerlink" href="#the-models-section" title="Permanent link">&para;</a></h4>
 <p>The <code>models</code> section lists the secondary models that are involved in the simulation. Each model is defined via the <code>model</code> tag. This tag takes two attributes:</p>
@@ -488,6 +500,16 @@
 <span class="w">    </span><span class="nt">&lt;/filter&gt;</span>
 <span class="nt">&lt;/exchange&gt;</span>
 </code></pre></div>
+<h4 id="the-strategy-section">The strategy section<a class="headerlink" href="#the-strategy-section" title="Permanent link">&para;</a></h4>
+<p>The <code>strategy</code> allows the user to select and configure the solution strategy for solving the coupled model. The solution strategy is chosen by specifying the strategy in the <code>type</code> attribute. </p>
+<p>The following strategies are supported. </p>
+<ul>
+<li><code>time-decoupled</code>: The time stepping of the secondary models is not coupled to the primary model. As the primary model advances in time, the secondary models are solved from start to finish when the data of secondary models is requested by the primary model. Data from the endstate of the secondary model is transferred back to the primary model. </li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="nt">&lt;strategy</span><span class="w"> </span><span class="na">type=</span><span class="s">&quot;time-decoupled&quot;</span><span class="nt">&gt;</span>
+<span class="w">    </span><span class="nt">&lt;exchange_interval&gt;</span>5<span class="nt">&lt;/exchange_interval&gt;</span>
+<span class="nt">&lt;/strategy&gt;</span>
+</code></pre></div>
 <h3 id="running-the-coupled-model">Running the coupled model<a class="headerlink" href="#running-the-coupled-model" title="Permanent link">&para;</a></h3>
 <p>To run the coupled model using the fuse library, use the following FEBio command line.</p>
 <div class="highlight"><pre><span></span><code>&gt;febio4 -i primary.feb -task=fuse control.xml
@@ -515,6 +537,9 @@
 <span class="w">            </span><span class="nt">&lt;/filter&gt;</span>
 <span class="w">        </span><span class="nt">&lt;/exchange&gt;</span>
 <span class="w">    </span><span class="nt">&lt;/exchanges&gt;</span>
+<span class="w">    </span><span class="nt">&lt;strategy</span><span class="w"> </span><span class="na">type=</span><span class="s">&quot;time-decoupled&quot;</span><span class="nt">&gt;</span>
+<span class="w">        </span><span class="nt">&lt;exchange_interval&gt;</span>5<span class="nt">&lt;/exchange_interval&gt;</span>
+<span class="w">    </span><span class="nt">&lt;/strategy&gt;</span><span class="w">    </span>
 <span class="nt">&lt;/febio_coupled_solver&gt;</span>
 </code></pre></div>
 
