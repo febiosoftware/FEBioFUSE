@@ -1,5 +1,5 @@
 #pragma once
-#include <FECore\FECoreClass.h>
+#include <FECore/FECoreClass.h>
 
 struct FuseModel;
 
