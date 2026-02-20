@@ -7,6 +7,8 @@
 #include "DataExchange.h"
 #include "DataExchangeList.h"
 #include "ModelList.h"
+#include "SolutionStrategy.h"
+#include "FuseModel.h"
 
 class FECoupledSolver : public FECoreTask
 {
@@ -27,8 +29,8 @@ private:
 private:
 	std::string m_version;
 
-	ModelList m_models;
-	DataExchangeList m_exchanges;
+	FuseModel m_fuse;
+	FESolutionStrategy* m_strategy = nullptr;
 
 	DECLARE_FECORE_CLASS();
 };

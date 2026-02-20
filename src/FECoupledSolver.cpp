@@ -8,6 +8,7 @@
 #include <FECore/log.h>
 #include <FECore/FEScalarValuator.h>
 #include <FECore/FEModelParam.h>
+#include <FECore/FECoreKernel.h>
 #include <FECore/FEDomainMap.h>
 #include <iostream>
 #include <sstream>
@@ -15,8 +16,9 @@ using namespace std;
 
 BEGIN_FECORE_CLASS(FECoupledSolver, FECoreTask)
 	ADD_PARAMETER(m_version, "version")->SetFlags(FE_PARAM_ATTRIBUTE);
-	ADD_PROPERTY(m_models, "models");
-	ADD_PROPERTY(m_exchanges, "exchanges");
+	ADD_PROPERTY(m_fuse.models, "models");
+	ADD_PROPERTY(m_fuse.exchanges, "exchanges");
+	ADD_PROPERTY(m_strategy, "strategy")->SetFlags(FEProperty::Optional);
 END_FECORE_CLASS();
 
 static bool coupling_cb(FEModel* fem, unsigned int nwhen, void* data)
@@ -25,7 +27,7 @@ static bool coupling_cb(FEModel* fem, unsigned int nwhen, void* data)
 	return s->RunCoupling();
 }
 
-FECoupledSolver::FECoupledSolver(FEModel* fem) : FECoreTask(fem), m_exchanges(fem)
+FECoupledSolver::FECoupledSolver(FEModel* fem) : FECoreTask(fem), m_fuse(fem)
 {
 #ifndef NDEBUG
 	fem->SetVerboseMode(true);
@@ -43,6 +45,16 @@ bool FECoupledSolver::Init(const char* szfile)
 	if (!InitModels())
 	{
 		feLog("Failed to initialize models.\n");
+		return false;
+	}
+
+	if (m_strategy == nullptr)
+	{
+		m_strategy = fecore_new_class<FESolutionStrategy>("FETimeDecoupledStrategy", GetFEModel());
+	}
+	if (!m_strategy->Init())
+	{
+		feLog("Failed to initialize solution strategy.\n");
 		return false;
 	}
 
@@ -93,15 +105,15 @@ bool FECoupledSolver::ParseControlFile(const char* szfile)
 
 bool FECoupledSolver::InitModels()
 {
-	if (m_models.empty()) return true;
+	if (m_fuse.models.empty()) return true;
 
 	FEModel* fem = GetFEModel(); // primary model
-	m_models.SetPrimaryModel(fem);
-	string primaryName = m_models.primaryModel.name;
+	m_fuse.models.SetPrimaryModel(fem);
+	string primaryName = m_fuse.models.primaryModel.name;
 	if (primaryName.empty() == false)
-		fem->SetName(m_models.primaryModel.name);
+		fem->SetName(m_fuse.models.primaryModel.name);
 
-	for (Model& mdl : m_models)
+	for (Model& mdl : m_fuse.models)
 	{
 		if (!mdl.InitModel())
 		{
@@ -111,9 +123,9 @@ bool FECoupledSolver::InitModels()
 	}
 
 	// resolve couplings
-	for (DataExchange& dex : m_exchanges)
+	for (DataExchange& dex : m_fuse.exchanges)
 	{
-		if (!dex.InitExchange(m_models))
+		if (!dex.InitExchange(m_fuse.models))
 		{
 			std::cerr << "Failed to initialize data exchange.\n";
 			return false;
@@ -122,7 +134,7 @@ bool FECoupledSolver::InitModels()
 
 	// Now that we've been able to read them all in,
 	// let's initialize them
-	for (Model& mdl : m_models)
+	for (Model& mdl : m_fuse.models)
 	{
 		assert(mdl.fem);
 		if (mdl.fem->Init() == false)
@@ -136,7 +148,7 @@ bool FECoupledSolver::InitModels()
 	string moduleName;
 
 	// setup plot files
-	for (Model& mdl : m_models)
+	for (Model& mdl : m_fuse.models)
 	{
 		FEBioPlotFile* xplt = new FEBioPlotFile(mdl.fem.get());
 
@@ -162,24 +174,5 @@ bool FECoupledSolver::InitModels()
 
 bool FECoupledSolver::RunCoupling()
 {
-	feLog("\nTransferring data from primary to secondary.\n");
-	if (!m_exchanges.TransferData(DataExchange::Type::PRIMARY_TO_SECONDARY))
-		return false;
-
-	// solve the secondary models
-	FETimeInfo& ti = GetFEModel()->GetTime();
-	feLog("Running secondary models:\n");
-	for (Model& mdl : m_models)
-	{
-		feLog("\tRunning model %s ...", mdl.name.c_str());
-		bool b = mdl.RunModel(ti.currentTime);
-		feLog(" %s\n", (b ? "SUCCESS" : "FAILED"));
-		if (!b) return false;
-	}
-
-	feLog("\nTransferring data from secondary to primary.\n");
-	if (!m_exchanges.TransferData(DataExchange::Type::SECONDARY_TO_PRIMARY))
-		return false;
-
-	return true;
+	return m_strategy->RunCoupling(m_fuse);
 }

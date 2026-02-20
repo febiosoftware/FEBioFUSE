@@ -16,4 +16,7 @@
             </filter>
         </exchange>
     </exchanges>
+    <strategy type="time-decoupled">
+        <exchange_interval>2</exchange_interval>
+    </strategy>
 </febio_coupled_solver>

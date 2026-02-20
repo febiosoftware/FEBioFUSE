@@ -12,10 +12,11 @@ The FUSE input file is an xml formatted file that defines the models involved in
 
 The root element is called `febio_coupled_solver`.
 
-There are two main sections in the file:
+There are three main sections in the file:
 
 * `models`: This defines the models that are involved in the coupled simulation. 
 * `exchanges`: This defines the data that needs to be exchanged between models.
+* `strategy`: This defines the solution strategy of the coupled solver.
 
 #### The models section
 
@@ -53,6 +54,19 @@ In addition, this element has the following property.
 </exchange>
 ```
 
+#### The strategy section
+The `strategy` allows the user to select and configure the solution strategy for solving the coupled model. The solution strategy is chosen by specifying the strategy in the `type` attribute. 
+
+The following strategies are supported. 
+
+* `time-decoupled`: The time stepping of the secondary models is not coupled to the primary model. As the primary model advances in time, the secondary models are solved from start to finish when the data of secondary models is requested by the primary model. Data from the endstate of the secondary model is transferred back to the primary model. 
+
+```xml
+<strategy type="time-decoupled">
+    <exchange_interval>5</exchange_interval>
+</strategy>
+```
+
 ### Running the coupled model
 To run the coupled model using the fuse library, use the following FEBio command line.
 
@@ -88,5 +102,8 @@ This example couples a primary model, named `chem` to a secondary model named `m
             </filter>
         </exchange>
     </exchanges>
+    <strategy type="time-decoupled">
+        <exchange_interval>5</exchange_interval>
+    </strategy>    
 </febio_coupled_solver>
 ```

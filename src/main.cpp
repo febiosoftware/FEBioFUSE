@@ -4,6 +4,7 @@
 #include "version.h"
 #include <FECore/sdk.h>
 #include "FECoupledSolver.h"
+#include "SolutionStrategy.h"
 
 FECORE_EXPORT unsigned int GetSDKVersion()
 {
@@ -23,4 +24,6 @@ FECORE_EXPORT void PluginInitialize(FECoreKernel& febio)
 	febio.SetActiveModule(0);
 
 	REGISTER_FECORE_CLASS(FECoupledSolver, "fuse");
+
+	REGISTER_FECORE_CLASS(FETimeDecoupledStrategy, "time-decoupled");
 }
