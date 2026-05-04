@@ -2,8 +2,8 @@
 
 #include <FECore/FEModel.h>
 #include "FECoupledSolver.h"
-#include <FEBioXML/XMLReader.h>
-#include <FEBioXML/xmltool.h>
+#include <FECore/XMLReader.h>
+#include <FECore/xmltool.h>
 #include <FEBioXML/FEBioImport.h>
 #include <FECore/log.h>
 #include <FECore/FEScalarValuator.h>
