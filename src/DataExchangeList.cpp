@@ -3,7 +3,7 @@
 #include <FECore/log.h>
 
 BEGIN_FECORE_CLASS(DataExchangeList, FECoreClass)
-	ADD_PROPERTY(exchanges, "exchange");
+	ADD_PROPERTY(exchanges, "exchange")->SetDefaultType("fuse_data_exchange");
 END_FECORE_CLASS();
 
 bool DataExchangeList::TransferData(DataExchange::Type type)

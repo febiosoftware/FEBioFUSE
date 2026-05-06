@@ -17,7 +17,7 @@ public:
 	};
 
 public:
-	DataExchange() {}
+	DataExchange(FEModel* fem = nullptr) {}
 
 	bool InitExchange(ModelList& models);
 

@@ -31,7 +31,7 @@ bool FETimeDecoupledStrategy::RunCoupling(FuseModel& fuse)
 		// solve the secondary models
 		FETimeInfo& ti = GetFEModel()->GetTime();
 		feLog("Running secondary models:\n");
-		for (Model& mdl : fuse.models)
+		for (SecondaryModel& mdl : fuse.models)
 		{
 			feLog("\tRunning model %s ...", mdl.name.c_str());
 			bool b = mdl.RunModel(ti.currentTime);

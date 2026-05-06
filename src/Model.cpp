@@ -3,12 +3,12 @@
 #include <FEBioXML/FEBioImport.h>
 #include <iostream>
 
-BEGIN_FECORE_CLASS(Model, FECoreClass)
+BEGIN_FECORE_CLASS(SecondaryModel, FECoreClass)
 	ADD_PARAMETER(name, "name")->SetFlags(FE_PARAM_ATTRIBUTE);
 	ADD_PARAMETER(file, "file")->SetFlags(FE_PARAM_ATTRIBUTE);
 END_FECORE_CLASS();
 
-bool Model::InitModel()
+bool SecondaryModel::InitModel()
 {
 	fem = make_shared<FEModel>();
 	fem->SetName(name);
@@ -24,7 +24,7 @@ bool Model::InitModel()
 	return true;
 }
 
-bool Model::RunModel(double currentTime)
+bool SecondaryModel::RunModel(double currentTime)
 {
 	if (fem == nullptr) return false;
 	fem->Reset();

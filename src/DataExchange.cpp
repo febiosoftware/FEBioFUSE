@@ -1,5 +1,5 @@
 #include "DataExchange.h"
-#include "FECoupledSolver.h"
+#include "FEBioFuseStudy.h"
 #include "ModelList.h"
 #include <FECore/FEDomainMap.h>
 #include <iostream>

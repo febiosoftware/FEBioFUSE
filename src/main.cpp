@@ -3,7 +3,7 @@
 #include <FECore/FECoreKernel.h>
 #include "version.h"
 #include <FECore/sdk.h>
-#include "FECoupledSolver.h"
+#include "FEBioFuseStudy.h"
 #include "SolutionStrategy.h"
 
 FECORE_EXPORT unsigned int GetSDKVersion()
@@ -23,7 +23,12 @@ FECORE_EXPORT void PluginInitialize(FECoreKernel& febio)
 	FECoreKernel::SetInstance(&febio);
 	febio.SetActiveModule(0);
 
-	REGISTER_FECORE_CLASS(FECoupledSolver, "fuse");
+	REGISTER_FECORE_CLASS(FEBioFuseStudy, "fuse");
+	REGISTER_FECORE_CLASS(ModelList, "fuse_model_list");
+	REGISTER_FECORE_CLASS(PrimaryModel, "fuse_primary_model");
+	REGISTER_FECORE_CLASS(SecondaryModel, "fuse_secondary_model");
+	REGISTER_FECORE_CLASS(DataExchangeList, "fuse_exchanges");
+	REGISTER_FECORE_CLASS(DataExchange, "fuse_data_exchange");
 
 	REGISTER_FECORE_CLASS(FETimeDecoupledStrategy, "time-decoupled");
 }

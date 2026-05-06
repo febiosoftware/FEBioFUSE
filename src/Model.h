@@ -3,12 +3,11 @@
 #include <FEBioPlot/FEBioPlotFile.h>
 #include <memory>
 
-class Model : public FECoreClass
+class SecondaryModel : public FECoreClass
 {
 public:
-	Model() {}
-	~Model() {}
-
+	SecondaryModel(FEModel* fem = nullptr) {}
+	~SecondaryModel() {}
 	bool InitModel();
 
 	bool RunModel(double currentTime);
@@ -20,5 +19,5 @@ public:
 
 
 	DECLARE_FECORE_CLASS();
-	FECORE_BASE_CLASS(Model);
+	FECORE_BASE_CLASS(SecondaryModel);
 };

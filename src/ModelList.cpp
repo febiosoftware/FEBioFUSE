@@ -6,8 +6,8 @@ BEGIN_FECORE_CLASS(PrimaryModel, FECoreClass)
 END_FECORE_CLASS();
 
 BEGIN_FECORE_CLASS(ModelList, FECoreClass)
-	ADD_PROPERTY(primaryModel, "primary_model");
-	ADD_PROPERTY(models, "model");
+	ADD_PROPERTY(primaryModel, "primary_model")->SetDefaultType("fuse_primary_model");
+	ADD_PROPERTY(models, "model")->SetDefaultType("fuse_secondary_model");
 END_FECORE_CLASS();
 
 FEModel* ModelList::GetModel(const std::string& name)
@@ -17,7 +17,7 @@ FEModel* ModelList::GetModel(const std::string& name)
 	if (fem->GetName() == name) return fem;
 
 	// check secondary models
-	for (Model& m : models)
+	for (SecondaryModel& m : models)
 	{
 		if (m.name == name)
 		{
