@@ -74,7 +74,7 @@ bool DataExchange::InitExchange(ModelList& models)
 		return false;
 	}
 
-	return true;
+	return Init();
 }
 
 void DataExchange::DoExchange()

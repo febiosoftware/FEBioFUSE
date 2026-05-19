@@ -9,14 +9,14 @@ END_FECORE_CLASS();
 bool DataExchangeList::TransferData(DataExchange::Type type)
 {
 	// transfer data
-	for (DataExchange& dex : exchanges)
+	for (DataExchange* dex : exchanges)
 	{
-		if (dex.type == type)
+		if (dex->type == type)
 		{
-			string srcName = dex.srcModel->GetName();
-			string dstName = dex.dstModel->GetName();
+			string srcName = dex->srcModel->GetName();
+			string dstName = dex->dstModel->GetName();
 			feLog("Mapping data from \"%s\" to \"%s\".\n", srcName.c_str(), dstName.c_str());
-			dex.DoExchange();
+			dex->DoExchange();
 		}
 	}
 

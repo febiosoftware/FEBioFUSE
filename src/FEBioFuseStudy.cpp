@@ -84,9 +84,9 @@ bool FEBioFuseStudy::InitModels()
 	}
 
 	// resolve couplings
-	for (DataExchange& dex : m_fuse.exchanges)
+	for (DataExchange* dex : m_fuse.exchanges)
 	{
-		if (!dex.InitExchange(m_fuse.models))
+		if (!dex->InitExchange(m_fuse.models))
 		{
 			std::cerr << "Failed to initialize data exchange.\n";
 			return false;
