@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<febio_coupled_solver version="1.0">
+<febio_study type="fuse">
     <models>
         <primary_model name="chem"/>
         <model name="mech" file="mech.feb" />
@@ -15,5 +15,10 @@
                 <scale>1e4</scale>
             </filter>
         </exchange>
+        <exchange type="param-to-param" src="chem.time" dst="mech.load[0].pressure">
+            <filter type="scale">
+                <scale>1.0</scale>
+            </filter>
+        </exchange>
     </exchanges>
-</febio_coupled_solver>
+</febio_study>

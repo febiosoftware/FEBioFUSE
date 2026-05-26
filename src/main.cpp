@@ -28,7 +28,9 @@ FECORE_EXPORT void PluginInitialize(FECoreKernel& febio)
 	REGISTER_FECORE_CLASS(PrimaryModel, "fuse_primary_model");
 	REGISTER_FECORE_CLASS(SecondaryModel, "fuse_secondary_model");
 	REGISTER_FECORE_CLASS(DataExchangeList, "fuse_exchanges");
-	REGISTER_FECORE_CLASS(DataExchange, "fuse_data_exchange");
+	
+	REGISTER_FECORE_CLASS(MapDataExchange, "map-to-map");
+	REGISTER_FECORE_CLASS(ParamExchange, "param-to-param");
 
 	REGISTER_FECORE_CLASS(FETimeDecoupledStrategy, "time-decoupled");
 }

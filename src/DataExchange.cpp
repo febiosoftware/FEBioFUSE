@@ -2,14 +2,8 @@
 #include "FEBioFuseStudy.h"
 #include "ModelList.h"
 #include <FECore/FEDomainMap.h>
+#include <FECore/log.h>
 #include <iostream>
-
-BEGIN_FECORE_CLASS(DataExchange, FECoreClass)
-	ADD_PARAMETER(src, "src")->SetFlags(FE_PARAM_ATTRIBUTE);
-	ADD_PARAMETER(dst, "dst")->SetFlags(FE_PARAM_ATTRIBUTE);
-
-	ADD_PROPERTY(filter, "filter");
-END_FECORE_CLASS();
 
 FEDataMap* GetDataMap(FEModel* fem, const std::string& name)
 {
@@ -34,7 +28,7 @@ FEDataMap* GetDataMap(FEModel* fem, const std::string& name)
 	return nullptr;
 }
 
-bool DataExchange::InitExchange(ModelList& models)
+bool MapDataExchange::InitExchange(ModelList& models)
 {
 	ParamString pssrc(src.c_str());
 	srcModel = models.GetModel(pssrc.string()); assert(srcModel);
@@ -77,8 +71,20 @@ bool DataExchange::InitExchange(ModelList& models)
 	return Init();
 }
 
-void DataExchange::DoExchange()
+BEGIN_FECORE_CLASS(MapDataExchange, FECoreClass)
+	ADD_PARAMETER(src, "src")->SetFlags(FE_PARAM_ATTRIBUTE);
+	ADD_PARAMETER(dst, "dst")->SetFlags(FE_PARAM_ATTRIBUTE);
+
+	ADD_PROPERTY(filter, "filter");
+END_FECORE_CLASS();
+
+
+void MapDataExchange::DoExchange()
 {
+	string srcName = srcModel->GetName();
+	string dstName = dstModel->GetName();
+	feLog("Mapping data from \"%s\" to \"%s\".\n", srcName.c_str(), dstName.c_str());
+
 	// set destination map
 	FEDomainMap* map = dynamic_cast<FEDomainMap*>(dstMap);
 	const FEElementSet* eset = map->GetElementSet();
@@ -90,4 +96,86 @@ void DataExchange::DoExchange()
 		if (filter) v = filter->value(v);
 		map->setValue((int)i, v);
 	}
+}
+
+BEGIN_FECORE_CLASS(ParamExchange, FECoreClass)
+	ADD_PARAMETER(src, "src")->SetFlags(FE_PARAM_ATTRIBUTE);
+	ADD_PARAMETER(dst, "dst")->SetFlags(FE_PARAM_ATTRIBUTE);
+
+	ADD_PROPERTY(filter, "filter");
+END_FECORE_CLASS();
+
+
+bool ParamExchange::InitExchange(ModelList& models)
+{
+	ParamString pssrc(src.c_str());
+	srcModel = models.GetModel(pssrc.string()); assert(srcModel);
+	if (srcModel == nullptr) return false;
+
+	string moduleName = srcModel->GetModuleName();
+	FECoreKernel& fecore = FECoreKernel::GetInstance();
+	fecore.SetActiveModule(moduleName.c_str());
+
+	FEParamValue srcParam = srcModel->GetParameterValue(pssrc);
+	if (!srcParam.isValid())
+	{
+		std::cerr << "Error: source parameter not found.\n";
+		return false;
+	}
+	if (srcParam.type() != FE_PARAM_DOUBLE)
+	{
+		std::cerr << "Error: source parameter must be of type double.\n";
+		return false;
+	}
+
+	ParamString psdst(dst.c_str());
+	dstModel = models.GetModel(psdst.string()); assert(dstModel);
+	if (dstModel == nullptr) return false;
+
+	moduleName = dstModel->GetModuleName();
+	fecore.SetActiveModule(moduleName.c_str());
+
+	FEParamValue dstParam = dstModel->GetParameterValue(psdst);
+	if (!dstParam.isValid())
+	{
+		std::cerr << "Error: destination parameter not found.\n";
+		return false;
+	}
+	if (dstParam.type() != FE_PARAM_DOUBLE)
+	{
+		std::cerr << "Error: destination parameter must be of type double.\n";
+		return false;
+	}
+
+	if (srcModel == dstModel)
+	{
+		std::cerr << "Error: source and destination models cannot be the same.\n";
+		return false;
+	}
+
+	FEModel* primaryModel = models.GetPrimaryModel();
+
+	if (srcModel == primaryModel) type = DataExchange::Type::PRIMARY_TO_SECONDARY;
+	else if (dstModel == primaryModel) type = DataExchange::Type::SECONDARY_TO_PRIMARY;
+
+	if (type == DataExchange::Type::INVALID)
+	{
+		std::cerr << "Error: Invalid exchange type.\n";
+		return false;
+	}
+
+	return Init();
+}
+
+void ParamExchange::DoExchange()
+{
+	ParamString pssrc(src.c_str());
+	FEParamValue srcParam = srcModel->GetParameterValue(pssrc);
+
+	double v = srcParam.value<double>();
+	if (filter) v = filter->value(v);
+
+	ParamString psdst(dst.c_str());
+	FEParamValue dstParam = dstModel->GetParameterValue(psdst);
+	dstParam.value<double>() = v;
 }

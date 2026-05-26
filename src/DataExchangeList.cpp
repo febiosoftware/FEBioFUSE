@@ -3,7 +3,7 @@
 #include <FECore/log.h>
 
 BEGIN_FECORE_CLASS(DataExchangeList, FECoreClass)
-	ADD_PROPERTY(exchanges, "exchange")->SetDefaultType("fuse_data_exchange");
+	ADD_PROPERTY(exchanges, "exchange")->SetDefaultType("map-to-map");
 END_FECORE_CLASS();
 
 bool DataExchangeList::TransferData(DataExchange::Type type)
@@ -13,9 +13,6 @@ bool DataExchangeList::TransferData(DataExchange::Type type)
 	{
 		if (dex->type == type)
 		{
-			string srcName = dex->srcModel->GetName();
-			string dstName = dex->dstModel->GetName();
-			feLog("Mapping data from \"%s\" to \"%s\".\n", srcName.c_str(), dstName.c_str());
 			dex->DoExchange();
 		}
 	}
