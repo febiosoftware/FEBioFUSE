@@ -2,7 +2,9 @@
 <febio_study type="fuse">
     <models>
         <primary_model name="chem"/>
-        <model name="mech" file="mech.feb" />
+        <model name="mech" file="mech.feb">
+            <log_output>1</log_output>
+        </model>
     </models>
     <exchanges>
         <exchange src="mech.elem_data('effective stress')" dst="chem.mesh_data('k_map')">

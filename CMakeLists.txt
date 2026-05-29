@@ -9,7 +9,7 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 project(FEBioFUSE)
 
 # Name of the FEBio libraries you need to link to
-set(FEBIO_LIBS FECore FEBioMech FEBioPlot FEBioXML)
+set(FEBIO_LIBS FECore FEBioMech FEBioPlot FEBioXML FEBioLib)
 
 # Find FEBio
 find_package(FEBio REQUIRED)
