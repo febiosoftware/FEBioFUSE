@@ -75,7 +75,7 @@ BEGIN_FECORE_CLASS(MapDataExchange, FECoreClass)
 	ADD_PARAMETER(src, "src")->SetFlags(FE_PARAM_ATTRIBUTE);
 	ADD_PARAMETER(dst, "dst")->SetFlags(FE_PARAM_ATTRIBUTE);
 
-	ADD_PROPERTY(filter, "filter");
+	ADD_PROPERTY(filter, "filter", FEProperty::Optional);
 END_FECORE_CLASS();
 
 
@@ -102,7 +102,7 @@ BEGIN_FECORE_CLASS(ParamExchange, FECoreClass)
 	ADD_PARAMETER(src, "src")->SetFlags(FE_PARAM_ATTRIBUTE);
 	ADD_PARAMETER(dst, "dst")->SetFlags(FE_PARAM_ATTRIBUTE);
 
-	ADD_PROPERTY(filter, "filter");
+	ADD_PROPERTY(filter, "filter", FEProperty::Optional);
 END_FECORE_CLASS();
 
 
