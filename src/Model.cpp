@@ -1,6 +1,7 @@
 #include "Model.h"
 #include <FEBioXML/FEBioImport.h>
 #include <FECore/FEAnalysis.h>
+#include <FEBioLib/FEBioModelBuilder.h>
 #include <iostream>
 
 BEGIN_FECORE_CLASS(SecondaryModel, FECoreClass)
@@ -16,6 +17,9 @@ bool SecondaryModel::InitModel()
 
 	// try to read the input file
 	FEBioImport fim;
+
+	fim.SetModelBuilder(new FEBioModelBuilder(*fem));
+
 	if (fim.Load(*fem, file.c_str()) == false)
 	{
 		std::cerr << "Failed to load model file: " << file << std::endl;
