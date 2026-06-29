@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
@@ -354,15 +354,15 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#fuse-input-file" class="md-nav__link">
+  <a href="#fuse-options-file" class="md-nav__link">
     <span class="md-ellipsis">
       
-        FUSE input file
+        FUSE options file
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="FUSE input file">
+    <nav class="md-nav" aria-label="FUSE options file">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -460,11 +460,13 @@
 <h2 id="febiofuse">FEBioFUSE<a class="headerlink" href="#febiofuse" title="Permanent link">&para;</a></h2>
 <p>The FUSE library (<strong>F</strong>EBio <strong>U</strong>nified <strong>S</strong>olver and <strong>E</strong>xchange) library allows users to couple different FEBio models and run them together, exchanging data where needed. </p>
 <p>The models exchange data via mesh data maps. Currently, it is assumed that all models involved use the exact same mesh and data maps that exchange data are defined on the same element set.</p>
-<p>One of the models is tagged as the primary model. This model will be the model that is specified on the FEBio command line (with the -i command line option). All the other models are identified as secondary models. </p>
+<p>One of the models is tagged as the primary model. This model will be the model that is specified on the FEBio command line (with the <code>-i</code> command line option). All the other models are identified as secondary models. </p>
 <p>The interaction between the models is defined via a separate input file that is described below.</p>
-<h3 id="fuse-input-file">FUSE input file<a class="headerlink" href="#fuse-input-file" title="Permanent link">&para;</a></h3>
-<p>The FUSE input file is an xml formatted file that defines the models involved in the coupled simulation and how data is exchanged between the models.</p>
-<p>The root element is called <code>febio_coupled_solver</code>.</p>
+<h3 id="fuse-options-file">FUSE options file<a class="headerlink" href="#fuse-options-file" title="Permanent link">&para;</a></h3>
+<p>The FUSE options file is an xml formatted file that defines the models involved in the coupled simulation and how data is exchanged between the models.</p>
+<p>The root element is defined by the <code>febio_study</code> tag, which needs the <code>type="fuse"</code> attribute.</p>
+<div class="highlight"><pre><span></span><code><span class="nt">&lt;febio_study</span><span class="w"> </span><span class="na">type=</span><span class="s">&quot;fuse&quot;</span><span class="nt">&gt;</span>
+</code></pre></div>
 <p>There are three main sections in the file:</p>
 <ul>
 <li><code>models</code>: This defines the models that are involved in the coupled simulation. </li>
@@ -504,7 +506,7 @@
 <p>The <code>strategy</code> allows the user to select and configure the solution strategy for solving the coupled model. The solution strategy is chosen by specifying the strategy in the <code>type</code> attribute. </p>
 <p>The following strategies are supported. </p>
 <ul>
-<li><code>time-decoupled</code>: The time stepping of the secondary models is not coupled to the primary model. As the primary model advances in time, the secondary models are solved from start to finish when the data of secondary models is requested by the primary model. Data from the endstate of the secondary model is transferred back to the primary model. </li>
+<li><code>time-decoupled</code>: The time stepping of the secondary models is not coupled to the primary model. As the primary model advances in time, the secondary models are solved from start to finish when the data of secondary models is requested by the primary model. Data from the end state of the secondary model is transferred back to the primary model. </li>
 </ul>
 <div class="highlight"><pre><span></span><code><span class="nt">&lt;strategy</span><span class="w"> </span><span class="na">type=</span><span class="s">&quot;time-decoupled&quot;</span><span class="nt">&gt;</span>
 <span class="w">    </span><span class="nt">&lt;exchange_interval&gt;</span>5<span class="nt">&lt;/exchange_interval&gt;</span>
@@ -512,15 +514,15 @@
 </code></pre></div>
 <h3 id="running-the-coupled-model">Running the coupled model<a class="headerlink" href="#running-the-coupled-model" title="Permanent link">&para;</a></h3>
 <p>To run the coupled model using the fuse library, use the following FEBio command line.</p>
-<div class="highlight"><pre><span></span><code>&gt;febio4 -i primary.feb -task=fuse control.xml
+<div class="highlight"><pre><span></span><code>&gt;febio4 -i primary.feb -task=fuse options.opt
 </code></pre></div>
-<p>Here, <code>primary.feb</code> is the name of the primary input file (this can be any FEBio input file). The <code>-task=fuse</code> option tells FEBio to use FUSE to solve the primary model. The <code>control.xml</code> is the FUSE input file (again, you can choose the name of this file).</p>
-<p>Along with the primary model, FUSE will also run the secondary models as needed and exchange data between all models as defined by the control file.</p>
+<p>Here, <code>primary.feb</code> is the name of the primary input file (this can be any FEBio input file). The <code>-task=fuse</code> option tells FEBio to use FUSE to solve the primary model. The <code>options.opt</code> is the FUSE input file (again, you can choose the name of this file).</p>
+<p>Along with the primary model, FUSE will also run the secondary models as needed and exchange data between all models as defined by the options file.</p>
 <p>FEBio will output the standard log and plot files for the primary model. In addition, it will create a plot file for the secondary models. The name of the plot file is derived from the secondary model’s name.</p>
 <h2 id="a-complete-example">A complete example<a class="headerlink" href="#a-complete-example" title="Permanent link">&para;</a></h2>
 <p>This example couples a primary model, named <code>chem</code> to a secondary model named <code>mech</code>. Data is passed in both directions. </p>
 <div class="highlight"><pre><span></span><code><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;ISO-8859-1&quot;?&gt;</span>
-<span class="nt">&lt;febio_coupled_solver</span><span class="w"> </span><span class="na">version=</span><span class="s">&quot;1.0&quot;</span><span class="nt">&gt;</span>
+<span class="nt">&lt;febio_study</span><span class="w"> </span><span class="na">type=</span><span class="s">&quot;fuse&quot;</span><span class="nt">&gt;</span>
 <span class="w">    </span><span class="nt">&lt;models&gt;</span>
 <span class="w">        </span><span class="nt">&lt;primary_model</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;chem&quot;</span><span class="nt">/&gt;</span>
 <span class="w">        </span><span class="nt">&lt;model</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;mech&quot;</span><span class="w"> </span><span class="na">file=</span><span class="s">&quot;MechDiffusion.feb&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
@@ -540,7 +542,7 @@
 <span class="w">    </span><span class="nt">&lt;strategy</span><span class="w"> </span><span class="na">type=</span><span class="s">&quot;time-decoupled&quot;</span><span class="nt">&gt;</span>
 <span class="w">        </span><span class="nt">&lt;exchange_interval&gt;</span>5<span class="nt">&lt;/exchange_interval&gt;</span>
 <span class="w">    </span><span class="nt">&lt;/strategy&gt;</span><span class="w">    </span>
-<span class="nt">&lt;/febio_coupled_solver&gt;</span>
+<span class="nt">&lt;/febio_study&gt;</span>
 </code></pre></div>
 
 
