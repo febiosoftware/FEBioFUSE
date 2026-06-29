@@ -4,7 +4,7 @@ The FUSE (**F**EBio **U**nified **S**imulation and **E**xchange) library is an F
 
 The models exchange data via mesh data maps. Currently, it is assumed that all models involved use the exact same mesh and data maps that exchange data are defined on the same element set.
 
-One of the models is designated as the primary model. This model will be the model that is specified on the FEBio command line (with the **-i** command line option). All the other models are identified as secondary models.
+One of the models is designated as the primary model. This model will be the model that is specified on the FEBio command line (with the `-i` command line option). All the other models are identified as secondary models.
 
 The interaction between the models is defined via a separate input file that is described below.
 
@@ -19,8 +19,11 @@ The root element is defined by the `febio_study` tag, which needs the `type="fus
 
 There are two main sections in the file:
 
-* **models**: This defines the models that are involved in the coupled simulation. 
-* **exchanges**: This defines the data that needs to be exchanged between models.
+There are three main sections in the file:
+
+* `models`: This defines the models that are involved in the coupled simulation. 
+* `exchanges`: This defines the data that needs to be exchanged between models.
+* `strategy`: This defines the solution strategy of the coupled solver.
 
 ### The **models** section
 The **models** section lists the secondary models that are involved in the simulation. Each model is defined via the model tag. This tag takes two attributes:
@@ -55,6 +58,18 @@ In addition, this element has the following optional property.
         <scale>0.1</scale>
     </filter
 </exchange>
+```
+### The strategy section
+The `strategy` allows the user to select and configure the solution strategy for solving the coupled model. The solution strategy is chosen by specifying the strategy in the `type` attribute. 
+
+The following strategies are supported. 
+
+* `time-decoupled`: The time stepping of the secondary models is not coupled to the primary model. As the primary model advances in time, the secondary models are solved from start to finish when the data of secondary models is requested by the primary model. Data from the end state of the secondary model is transferred back to the primary model. 
+
+```xml
+<strategy type="time-decoupled">
+    <exchange_interval>5</exchange_interval>
+</strategy>
 ```
 
 ## Running the coupled model

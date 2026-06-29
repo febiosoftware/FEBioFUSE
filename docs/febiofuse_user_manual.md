@@ -3,14 +3,18 @@ The FUSE library (**F**EBio **U**nified **S**olver and **E**xchange) library all
 
 The models exchange data via mesh data maps. Currently, it is assumed that all models involved use the exact same mesh and data maps that exchange data are defined on the same element set.
 
-One of the models is tagged as the primary model. This model will be the model that is specified on the FEBio command line (with the -i command line option). All the other models are identified as secondary models. 
+One of the models is tagged as the primary model. This model will be the model that is specified on the FEBio command line (with the `-i` command line option). All the other models are identified as secondary models. 
 
 The interaction between the models is defined via a separate input file that is described below.
 
-### FUSE input file
-The FUSE input file is an xml formatted file that defines the models involved in the coupled simulation and how data is exchanged between the models.
+### FUSE options file
+The FUSE options file is an xml formatted file that defines the models involved in the coupled simulation and how data is exchanged between the models.
 
-The root element is called `febio_coupled_solver`.
+The root element is defined by the `febio_study` tag, which needs the `type="fuse"` attribute.
+
+```xml
+<febio_study type="fuse">
+```
 
 There are three main sections in the file:
 
@@ -59,7 +63,7 @@ The `strategy` allows the user to select and configure the solution strategy for
 
 The following strategies are supported. 
 
-* `time-decoupled`: The time stepping of the secondary models is not coupled to the primary model. As the primary model advances in time, the secondary models are solved from start to finish when the data of secondary models is requested by the primary model. Data from the endstate of the secondary model is transferred back to the primary model. 
+* `time-decoupled`: The time stepping of the secondary models is not coupled to the primary model. As the primary model advances in time, the secondary models are solved from start to finish when the data of secondary models is requested by the primary model. Data from the end state of the secondary model is transferred back to the primary model. 
 
 ```xml
 <strategy type="time-decoupled">
@@ -71,12 +75,12 @@ The following strategies are supported.
 To run the coupled model using the fuse library, use the following FEBio command line.
 
 ```
->febio4 -i primary.feb -task=fuse control.xml
+>febio4 -i primary.feb -task=fuse options.opt
 ```
 
-Here, `primary.feb` is the name of the primary input file (this can be any FEBio input file). The `-task=fuse` option tells FEBio to use FUSE to solve the primary model. The `control.xml` is the FUSE input file (again, you can choose the name of this file).
+Here, `primary.feb` is the name of the primary input file (this can be any FEBio input file). The `-task=fuse` option tells FEBio to use FUSE to solve the primary model. The `options.opt` is the FUSE input file (again, you can choose the name of this file).
 
-Along with the primary model, FUSE will also run the secondary models as needed and exchange data between all models as defined by the control file.
+Along with the primary model, FUSE will also run the secondary models as needed and exchange data between all models as defined by the options file.
 
 FEBio will output the standard log and plot files for the primary model. In addition, it will create a plot file for the secondary models. The name of the plot file is derived from the secondary model’s name.
 
@@ -85,7 +89,7 @@ This example couples a primary model, named `chem` to a secondary model named `m
 
 ```xml
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<febio_coupled_solver version="1.0">
+<febio_study type="fuse">
     <models>
         <primary_model name="chem"/>
         <model name="mech" file="MechDiffusion.feb" />
@@ -105,5 +109,5 @@ This example couples a primary model, named `chem` to a secondary model named `m
     <strategy type="time-decoupled">
         <exchange_interval>5</exchange_interval>
     </strategy>    
-</febio_coupled_solver>
+</febio_study>
 ```
