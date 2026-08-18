@@ -18,11 +18,15 @@ class FETimeDecoupledStrategy : public FESolutionStrategy
 public:
 	FETimeDecoupledStrategy(FEModel* fem = nullptr);
 
+	bool Init() override;
+
 	bool RunCoupling(FuseModel& mdl) override;
 
 private:
-	int exchange_interval = 1;
+	int exchange_interval = 0;
+	double exchange_time_interval = 0.0;
 
+	int steps = 0;
 	int exchanges = 0;
 
 	DECLARE_FECORE_CLASS();

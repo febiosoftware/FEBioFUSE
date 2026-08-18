@@ -37,6 +37,18 @@ bool FEBioFuseStudy::Init()
 	if (m_strategy == nullptr)
 	{
 		m_strategy = fecore_new_class<FESolutionStrategy>("FETimeDecoupledStrategy", GetFEModel());
+		if (m_strategy == nullptr)
+		{
+			feLog("Failed to create default solution strategy.\n");
+			return false;
+		}
+		FEParam* p = m_strategy->GetParameter("exchange_interval");
+		if (p == nullptr)
+		{
+			feLog("Failed to find parameter \"exchange_interval\" in solution strategy.\n");
+			return false;
+		}
+		p->value<int>() = 1;
 	}
 	if (!m_strategy->Init())
 	{
