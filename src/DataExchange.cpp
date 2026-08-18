@@ -28,6 +28,14 @@ FEDataMap* GetDataMap(FEModel* fem, const std::string& name)
 	return nullptr;
 }
 
+//=============================================================================
+BEGIN_FECORE_CLASS(MapDataExchange, FECoreClass)
+	ADD_PARAMETER(src, "src")->SetFlags(FE_PARAM_ATTRIBUTE);
+	ADD_PARAMETER(dst, "dst")->SetFlags(FE_PARAM_ATTRIBUTE);
+
+	ADD_PROPERTY(filter, "filter", FEProperty::Optional);
+END_FECORE_CLASS();
+
 bool MapDataExchange::InitExchange(ModelList& models)
 {
 	ParamString pssrc(src.c_str());
@@ -71,14 +79,6 @@ bool MapDataExchange::InitExchange(ModelList& models)
 	return Init();
 }
 
-BEGIN_FECORE_CLASS(MapDataExchange, FECoreClass)
-	ADD_PARAMETER(src, "src")->SetFlags(FE_PARAM_ATTRIBUTE);
-	ADD_PARAMETER(dst, "dst")->SetFlags(FE_PARAM_ATTRIBUTE);
-
-	ADD_PROPERTY(filter, "filter", FEProperty::Optional);
-END_FECORE_CLASS();
-
-
 void MapDataExchange::DoExchange()
 {
 	string srcName = srcModel->GetName();
@@ -98,6 +98,98 @@ void MapDataExchange::DoExchange()
 	}
 }
 
+//=============================================================================
+BEGIN_FECORE_CLASS(AverageDstMapExchange, FECoreClass)
+	ADD_PARAMETER(src, "src")->SetFlags(FE_PARAM_ATTRIBUTE);
+	ADD_PARAMETER(dst, "dst")->SetFlags(FE_PARAM_ATTRIBUTE);
+	ADD_PARAMETER(max_steps, "max_steps");
+	ADD_PROPERTY(filter, "filter", FEProperty::Optional);
+END_FECORE_CLASS();
+
+bool AverageDstMapExchange::InitExchange(ModelList& models)
+{
+	ParamString pssrc(src.c_str());
+	srcModel = models.GetModel(pssrc.string()); assert(srcModel);
+	if (srcModel == nullptr) return false;
+
+	string moduleName = srcModel->GetModuleName();
+	FECoreKernel& fecore = FECoreKernel::GetInstance();
+	fecore.SetActiveModule(moduleName.c_str());
+
+	srcData = srcModel->GetDataValue(pssrc);
+	if (!srcData.IsValid()) return false;
+
+	ParamString psdst(dst.c_str());
+	dstModel = models.GetModel(psdst.string()); assert(dstModel);
+	if (dstModel == nullptr) return false;
+
+	moduleName = dstModel->GetModuleName();
+	fecore.SetActiveModule(moduleName.c_str());
+
+	dstMap = GetDataMap(dstModel, dst);
+	if (dstMap == nullptr) return false;
+
+	if (srcModel == dstModel)
+	{
+		std::cerr << "Error: source and destination models cannot be the same.\n";
+		return false;
+	}
+
+	FEModel* primaryModel = models.GetPrimaryModel();
+
+	if (srcModel == primaryModel) type = DataExchange::Type::PRIMARY_TO_SECONDARY;
+	else if (dstModel == primaryModel) type = DataExchange::Type::SECONDARY_TO_PRIMARY;
+
+	if (type == DataExchange::Type::INVALID)
+	{
+		std::cerr << "Error: Invalid exchange type.\n";
+		return false;
+	}
+
+	dstDataHistory.resize(max_steps);
+	steps = 0;
+	insertPos = 0;
+
+	return Init();
+}
+
+void AverageDstMapExchange::DoExchange()
+{
+	string srcName = srcModel->GetName();
+	string dstName = dstModel->GetName();
+	feLog("Mapping data from \"%s\" to \"%s\".\n", srcName.c_str(), dstName.c_str());
+
+	// set destination map
+	FEDomainMap* map = dynamic_cast<FEDomainMap*>(dstMap);
+	const FEElementSet* eset = map->GetElementSet();
+	std::vector<double> val;
+	srcData.GetValues(eset, val);
+	for (size_t i = 0; i < val.size(); ++i)
+	{
+		// apply filter to current value
+		if (filter) val[i] = filter->value(val[i]);
+
+		// calculate the average of the previous values
+		double v = val[i];
+		for (int j = 0; j < steps; ++j)
+		{
+			v += dstDataHistory[j][i];
+		}
+		v /= (steps + 1);
+
+		map->setValue((int)i, v);
+	}
+
+	// store the value in the history
+	if (max_steps > 0)
+	{
+		dstDataHistory[insertPos] = val;
+		insertPos = (insertPos + 1) % max_steps;
+		steps = std::min(steps + 1, max_steps);
+	}
+}
+
+//=============================================================================
 BEGIN_FECORE_CLASS(ParamExchange, FECoreClass)
 	ADD_PARAMETER(src, "src")->SetFlags(FE_PARAM_ATTRIBUTE);
 	ADD_PARAMETER(dst, "dst")->SetFlags(FE_PARAM_ATTRIBUTE);

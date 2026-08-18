@@ -52,6 +52,30 @@ private:
 	DECLARE_FECORE_CLASS();
 };
 
+class AverageDstMapExchange : public DataExchange
+{
+public:
+	AverageDstMapExchange(FEModel* fem) : DataExchange(fem) {}
+
+	bool InitExchange(ModelList& models) override;
+
+	void DoExchange() override;
+
+private:
+	int max_steps = 1;
+	std::vector< std::vector<double> > dstDataHistory;
+	int steps = 0;
+	int insertPos = 0;
+
+	FEModel* srcModel = nullptr;
+	FEDataValue srcData;
+
+	FEModel* dstModel = nullptr;
+	FEDataMap* dstMap = nullptr;
+
+	DECLARE_FECORE_CLASS();
+};
+
 class ParamExchange : public DataExchange
 {
 public:

@@ -30,6 +30,7 @@ FECORE_EXPORT void PluginInitialize(FECoreKernel& febio)
 	REGISTER_FECORE_CLASS(DataExchangeList, "fuse_exchanges");
 	
 	REGISTER_FECORE_CLASS(MapDataExchange, "map-to-map");
+	REGISTER_FECORE_CLASS(AverageDstMapExchange, "average-dst-map");
 	REGISTER_FECORE_CLASS(ParamExchange, "param-to-param");
 
 	REGISTER_FECORE_CLASS(FETimeDecoupledStrategy, "time-decoupled");
